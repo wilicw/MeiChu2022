@@ -1,0 +1,20 @@
+CMakeFiles/meichu2022.elf.dir/Core/Src/sysmem.c.obj: \
+ /Users/wilicw/Projects/MeiChu2022/firmware/meichu2022/Core/Src/sysmem.c \
+ /Applications/ARM/arm-none-eabi/include/errno.h \
+ /Applications/ARM/arm-none-eabi/include/sys/errno.h \
+ /Applications/ARM/arm-none-eabi/include/sys/reent.h \
+ /Applications/ARM/arm-none-eabi/include/_ansi.h \
+ /Applications/ARM/arm-none-eabi/include/newlib.h \
+ /Applications/ARM/arm-none-eabi/include/_newlib_version.h \
+ /Applications/ARM/arm-none-eabi/include/sys/config.h \
+ /Applications/ARM/arm-none-eabi/include/machine/ieeefp.h \
+ /Applications/ARM/arm-none-eabi/include/sys/features.h \
+ /Applications/ARM/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+ /Applications/ARM/arm-none-eabi/include/sys/_types.h \
+ /Applications/ARM/arm-none-eabi/include/machine/_types.h \
+ /Applications/ARM/arm-none-eabi/include/machine/_default_types.h \
+ /Applications/ARM/arm-none-eabi/include/sys/lock.h \
+ /Applications/ARM/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+ /Applications/ARM/arm-none-eabi/include/stdint.h \
+ /Applications/ARM/arm-none-eabi/include/sys/_intsup.h \
+ /Applications/ARM/arm-none-eabi/include/sys/_stdint.h
