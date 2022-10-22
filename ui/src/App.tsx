@@ -22,19 +22,19 @@ function App() {
             if (splitted.length === 4) {
               setTemp((oldTemp) => [...oldTemp, {
                 time: oldTemp.slice(-1)[0].time + 1,
-                temp: parseInt(splitted[0], 10),
+                temp: parseInt(splitted[0], 10) / 10,
               }].slice(-10));
               setHumidity((oldHumidity) => [...oldHumidity, {
                 time: oldHumidity.slice(-1)[0].time + 1,
-                humidity: parseInt(splitted[1], 10),
+                humidity: parseInt(splitted[1], 10) / 10,
               }].slice(-10));
               setPressure((oldPressure) => [...oldPressure, {
                 time: oldPressure.slice(-1)[0].time + 1,
-                pressure: parseInt(splitted[2], 10),
+                pressure: parseInt(splitted[2], 10) / 10,
               }].slice(-10));
               setSpeed((oldSpeed) => [...oldSpeed, {
                 time: oldSpeed.slice(-1)[0].time + 1,
-                speed: parseInt(splitted[3], 10),
+                speed: parseInt(splitted[3], 10) / 10,
               }].slice(-10));
             }
           });
