@@ -144,16 +144,18 @@ int main(void) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    static uint16_t hum, tmp;
+    static uint16_t hum, tmp, servo;
     err = HTS221_Get_Measurement(&hi2c1, &hum, &tmp);
     HAL_ADC_PollForConversion(&hadc, HAL_MAX_DELAY);
     AD_DMA = HAL_ADC_GetValue(&hadc);
-    printf("%lu,%lu,%lu,0\r\n", tmp, hum, AD_DMA);
-    if (AD_DMA > 500) {
+    if (AD_DMA > 1100 && servo == 0) {
         __HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_2, 1000 * 0.05);
-    } else {
+      servo = 1;
+    } else if (AD_DMA < 1000 && servo == 1) {
         __HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_2, 1000 * 0.1);
+      servo = 0;
     }
+    printf("%lu,%lu,%lu,%lu\r\n", tmp, hum, AD_DMA, servo);
     LL_mDelay(1000);
   }
   /* USER CODE END 3 */
