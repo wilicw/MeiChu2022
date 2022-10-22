@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "HTS221.h"
 #include "stdlib.h"
 #include "stdio.h"
 /* USER CODE END Includes */
@@ -112,14 +112,22 @@ int main(void) {
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  static char buffer[100] = {'\0'};
+  static HTS221_Error_et err;
+  err = HTS221_DeActivate(&hi2c1);
+  err = HTS221_Set_BduMode(&hi2c1, HTS221_ENABLE);
+  err = HTS221_Set_Odr(&hi2c1, HTS221_ODR_1HZ);
+  err = HTS221_Activate(&hi2c1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
     /* USER CODE END WHILE */
-
+    static uint16_t hum, tmp;
+    err = HTS221_Get_Measurement(&hi2c1, &hum, &tmp);
+    printf("%lu,%lu,0,0\r\n", tmp, hum);
+    LL_mDelay(1000);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
