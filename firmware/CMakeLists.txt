@@ -49,9 +49,9 @@ else ()
     add_compile_options(-Og -g)
 endif ()
 
-include_directories(Core/Inc Drivers/STM32L0xx_HAL_Driver/Inc Drivers/CMSIS/Device/ST/STM32L0xx/Include Drivers/CMSIS/Include)
+include_directories(Core/Inc Drivers/STM32L0xx_HAL_Driver/Inc Drivers/CMSIS/Device/ST/STM32L0xx/Include Drivers/CMSIS/Include Drivers/STM32L0xx_HAL_Driver/Inc/Legacy)
 
-add_definitions(-DDEBUG -DUSE_FULL_LL_DRIVER -DHSE_VALUE=8000000 -DHSE_STARTUP_TIMEOUT=100 -DLSE_STARTUP_TIMEOUT=5000 -DLSE_VALUE=32768 -DMSI_VALUE=2097000 -DHSI_VALUE=16000000 -DLSI_VALUE=37000 -DVDD_VALUE=3300 -DPREFETCH_ENABLE=0 -DINSTRUCTION_CACHE_ENABLE=1 -DDATA_CACHE_ENABLE=1 -DSTM32L073xx)
+add_definitions(-DDEBUG -DUSE_FULL_LL_DRIVER -DSTM32L073xx -DUSE_HAL_DRIVER)
 
 file(GLOB_RECURSE SOURCES "Core/*.*" "Drivers/*.*")
 
