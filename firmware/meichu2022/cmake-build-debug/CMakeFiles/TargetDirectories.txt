@@ -1,3 +1,0 @@
-/Users/wilicw/Projects/MeiChu2022/firmware/meichu2022/cmake-build-debug/CMakeFiles/meichu2022.elf.dir
-/Users/wilicw/Projects/MeiChu2022/firmware/meichu2022/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/wilicw/Projects/MeiChu2022/firmware/meichu2022/cmake-build-debug/CMakeFiles/rebuild_cache.dir
