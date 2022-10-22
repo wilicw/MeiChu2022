@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import './App.css';
-import { Flex, Box } from 'rebass';
+import { Flex, Box, Text } from 'rebass';
 import { Button } from '@fluentui/react-components';
 import DataVisualization from './components/DataVisualization';
 
@@ -46,12 +46,15 @@ function App() {
 
   return (
     <div className="App">
-      <Button onClick={requestSerialPort}>
-        Request Port
-      </Button>
-
       <Flex>
-        <Box width={1 / 2} px={2}>
+        <Text style={{ margin: 5 }} p={3} fontWeight="bold">Still Discussing...</Text>
+        <Box mx="auto" />
+        <Button shape="rounded" style={{ margin: 10 }} appearance="primary" onClick={requestSerialPort}>
+          Request Port
+        </Button>
+      </Flex>
+      <Flex>
+        <Box style={{ margin: 5 }} width={1 / 2} px={2}>
           <DataVisualization
             colors={['#28536b']}
             keys={['temp']}
@@ -61,7 +64,7 @@ function App() {
             height={300}
           />
         </Box>
-        <Box width={1 / 2} px={2}>
+        <Box style={{ margin: 5 }} width={1 / 2} px={2}>
           <DataVisualization
             colors={['#28536b']}
             keys={['humidity']}
@@ -73,7 +76,7 @@ function App() {
         </Box>
       </Flex>
       <Flex>
-        <Box width={1 / 2} px={2}>
+        <Box style={{ margin: 5 }} width={1 / 2} px={2}>
           <DataVisualization
             colors={['#28536b']}
             keys={['pressure']}
@@ -83,7 +86,7 @@ function App() {
             height={300}
           />
         </Box>
-        <Box width={1 / 2} px={2}>
+        <Box style={{ margin: 5 }} width={1 / 2} px={2}>
           <DataVisualization
             colors={['#28536b']}
             keys={['speed']}
