@@ -60,9 +60,9 @@ function App() {
         <Text style={{ margin: 5 }} p={3} fontWeight="bold">Still Discussing...</Text>
         <Box mx="auto" />
         {fanState === 1 ? (
-          <ToggleButton shape="rounded" style={{ margin: 10 }} disabled>Fan Flipped</ToggleButton>
+          <ToggleButton shape="rounded" style={{ margin: 10, backgroundColor: '#F77F00', color: 'white' }} disabled>Feathering</ToggleButton>
         ) : (
-          <ToggleButton shape="rounded" style={{ margin: 10 }}>Fan Open</ToggleButton>
+          <ToggleButton shape="rounded" style={{ margin: 10, backgroundColor: '#55A630', color: 'white' }}>Normal Operating</ToggleButton>
         )}
         <ToggleButton shape="rounded" style={{ margin: 10 }} appearance="primary" onClick={requestSerialPort}>
           Request Port
