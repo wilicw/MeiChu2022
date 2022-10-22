@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import './App.css';
-// import SerialData from './components/SerialData';
+import { Flex, Box } from 'rebass';
+import { Button } from '@fluentui/react-components';
 import DataVisualization from './components/DataVisualization';
 
 function App() {
@@ -45,44 +46,54 @@ function App() {
 
   return (
     <div className="App">
-      <button
-        type="button"
-        onClick={requestSerialPort}
-      >
+      <Button onClick={requestSerialPort}>
         Request Port
-      </button>
-      <DataVisualization
-        colors={['#28536b']}
-        keys={['temp']}
-        chartName="Temperature"
-        unit="℃"
-        data={temp}
-        height={300}
-      />
-      <DataVisualization
-        colors={['#28536b']}
-        keys={['humidity']}
-        chartName="Humidity"
-        unit="%"
-        data={humidity}
-        height={300}
-      />
-      <DataVisualization
-        colors={['#28536b']}
-        keys={['pressure']}
-        chartName="Pressure"
-        unit="c"
-        data={pressure}
-        height={300}
-      />
-      <DataVisualization
-        colors={['#28536b']}
-        keys={['speed']}
-        chartName="Wind Speed"
-        unit="c"
-        data={speed}
-        height={300}
-      />
+      </Button>
+
+      <Flex>
+        <Box width={1 / 2} px={2}>
+          <DataVisualization
+            colors={['#28536b']}
+            keys={['temp']}
+            chartName="Temperature"
+            unit="℃"
+            data={temp}
+            height={300}
+          />
+        </Box>
+        <Box width={1 / 2} px={2}>
+          <DataVisualization
+            colors={['#28536b']}
+            keys={['humidity']}
+            chartName="Humidity"
+            unit="%"
+            data={humidity}
+            height={300}
+          />
+        </Box>
+      </Flex>
+      <Flex>
+        <Box width={1 / 2} px={2}>
+          <DataVisualization
+            colors={['#28536b']}
+            keys={['pressure']}
+            chartName="Pressure"
+            unit="c"
+            data={pressure}
+            height={300}
+          />
+        </Box>
+        <Box width={1 / 2} px={2}>
+          <DataVisualization
+            colors={['#28536b']}
+            keys={['speed']}
+            chartName="Wind Speed"
+            unit="c"
+            data={speed}
+            height={300}
+          />
+        </Box>
+      </Flex>
     </div>
   );
 }
