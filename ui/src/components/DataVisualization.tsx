@@ -81,7 +81,7 @@ function DataVisualization({
                   <Line type="monotone" dataKey={key} stroke={color} dot={false} />
                 ))}
                 <CartesianGrid stroke="#ccc" />
-                <XAxis dataKey="time" allowDecimals={false} type="number" domain={[0, 'dataMax']} tickFormatter={DataFormatter} />
+                <XAxis dataKey="time" allowDecimals={false} type="number" domain={['dataMin', 'dataMax']} tickFormatter={DataFormatter} />
                 <YAxis tickFormatter={DataFormatter} width={40} />
               </LineChart>
             </ResponsiveContainer>
