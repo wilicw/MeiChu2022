@@ -134,6 +134,8 @@ int main(void) {
 
   static uint32_t AD_DMA;
   HAL_ADC_Start(&hadc);
+
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -147,6 +149,11 @@ int main(void) {
     HAL_ADC_PollForConversion(&hadc, HAL_MAX_DELAY);
     AD_DMA = HAL_ADC_GetValue(&hadc);
     printf("%lu,%lu,%lu,0\r\n", tmp, hum, AD_DMA);
+    if (AD_DMA > 500) {
+        __HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_2, 1000 * 0.05);
+    } else {
+        __HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_2, 1000 * 0.1);
+    }
     LL_mDelay(1000);
   }
   /* USER CODE END 3 */
@@ -311,7 +318,7 @@ static void MX_TIM2_Init(void) {
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 639;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 999;
+  htim2.Init.Period = 1000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK) {
@@ -323,7 +330,7 @@ static void MX_TIM2_Init(void) {
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 50;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK) {
