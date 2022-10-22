@@ -82,7 +82,14 @@ function DataVisualization({
                 ))}
                 <CartesianGrid stroke="#ccc" />
                 <XAxis dataKey="time" allowDecimals={false} type="number" domain={['dataMin', 'dataMax']} tickFormatter={DataFormatter} />
-                <YAxis tickFormatter={DataFormatter} width={40} />
+                <YAxis
+                  tickFormatter={DataFormatter}
+                  width={40}
+                  domain={[
+                    (dataMin: number) => (0 - Math.abs(dataMin)),
+                    (dataMax: number) => (dataMax * 2),
+                  ]}
+                />
               </LineChart>
             </ResponsiveContainer>
           ) : <Spinner style={{ height: '100%' }} label="Waiting Data..." />
