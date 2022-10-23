@@ -3,36 +3,37 @@ import './App.css';
 import { Flex, Box, Text } from 'rebass';
 import { ToggleButton, Slider } from '@fluentui/react-components';
 import DataVisualization from './components/DataVisualization';
+import IDataVisual from './interfaces/IDataVisual';
 
 const maxX = 100;
 
 function App() {
-  const [temp, setTemp] = useState([{ time: 0, temp: 0 }]);
-  const [humidity, setHumidity] = useState([{ time: 0, humidity: 0 }]);
-  const [pressure, setPressure] = useState([{ time: 0, pressure: 0 }]);
-  const [speed, setSpeed] = useState([{ time: 0, speed: 0 }]);
+  const [temp, setTemp] = useState<IDataVisual[]>([]);
+  const [humidity, setHumidity] = useState<IDataVisual[]>([]);
+  const [pressure, setPressure] = useState<IDataVisual[]>([]);
+  const [speed, setSpeed] = useState<IDataVisual[]>([]);
   const [fanState, setFanState] = useState(0);
   const [earthquakeState, setEarthquakeState] = useState(0);
 
   const plot = (v: string) => {
-    // console.log(v);
+    console.log(v);
     const splitted = v.split(',', 10);
     if (splitted.length === 7) {
       // const t = parseInt(splitted[0], 10);
       setTemp((oldTemp) => [...oldTemp, {
-        time: oldTemp.slice(-1)[0].time + 1,
+        time: oldTemp.length ? oldTemp.slice(-1)[0].time + 1 : 0,
         temp: parseInt(splitted[1], 10) / 10,
       }].slice(-maxX));
       setHumidity((oldHumidity) => [...oldHumidity, {
-        time: oldHumidity.slice(-1)[0].time + 1,
+        time: oldHumidity.length ? oldHumidity.slice(-1)[0].time + 1 : 0,
         humidity: parseInt(splitted[2], 10) / 10,
       }].slice(-maxX));
       setPressure((oldPressure) => [...oldPressure, {
-        time: oldPressure.slice(-1)[0].time + 1,
+        time: oldPressure.length ? oldPressure.slice(-1)[0].time + 1 : 0,
         pressure: parseInt(splitted[4], 10),
       }].slice(-maxX));
       setSpeed((oldSpeed) => [...oldSpeed, {
-        time: oldSpeed.slice(-1)[0].time + 1,
+        time: oldSpeed.length ? oldSpeed.slice(-1)[0].time + 1 : 0,
         speed: parseInt(splitted[3], 10) / 10,
       }].slice(-maxX));
       setFanState(() => parseInt(splitted[5], 10));
