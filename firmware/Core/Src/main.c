@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "HTS221.h"
+#include "LPS22HH.h"
 #include "stdlib.h"
 #include "stdio.h"
 /* USER CODE END Includes */
@@ -80,6 +81,14 @@ uint8_t HTS221_IO_Read(void *handle, uint8_t ReadAddr, uint8_t *pBuffer, uint16_
   HAL_I2C_Mem_Read(handle, HTS221_I2C_ADDRESS, ReadAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, nBytesToRead, 1000);
 }
 
+uint8_t LPS22HH_IO_Write(void *handle, uint8_t WriteAddr, uint8_t *pBuffer, uint16_t nBytesToWrite) {
+  HAL_I2C_Mem_Write(handle, LPS22HH_I2C_ADD_H, WriteAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, nBytesToWrite, 1000);
+}
+
+uint8_t LPS22HH_IO_Read(void *handle, uint8_t ReadAddr, uint8_t *pBuffer, uint16_t nBytesToRead) {
+  HAL_I2C_Mem_Read(handle, LPS22HH_I2C_ADD_H, ReadAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, nBytesToRead, 1000);
+}
+
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int c)
 #else
@@ -126,11 +135,19 @@ int main(void) {
   MX_ADC_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  static HTS221_Error_et err;
-  err = HTS221_DeActivate(&hi2c1);
-  err = HTS221_Set_BduMode(&hi2c1, HTS221_ENABLE);
-  err = HTS221_Set_Odr(&hi2c1, HTS221_ODR_1HZ);
-  err = HTS221_Activate(&hi2c1);
+  static HTS221_Error_et hts221_err;
+  static int32_t lps22hh_err;
+  hts221_err = HTS221_DeActivate(&hi2c1);
+  hts221_err = HTS221_Set_BduMode(&hi2c1, HTS221_ENABLE);
+  hts221_err = HTS221_Set_Odr(&hi2c1, HTS221_ODR_1HZ);
+  hts221_err = HTS221_Activate(&hi2c1);
+
+  lps22hh_err = lps22hh_i3c_interface_set(&hi2c1, LPS22HH_I3C_DISABLE);
+  lps22hh_err = lps22hh_data_rate_set(&hi2c1, (lps22hh_odr_t) (LPS22HH_POWER_DOWN | 0x10));
+  lps22hh_err = lps22hh_lp_bandwidth_set(&hi2c1, LPS22HH_LPF_ODR_DIV_2);
+  lps22hh_err = lps22hh_block_data_update_set(&hi2c1, PROPERTY_ENABLE);
+  lps22hh_err = lps22hh_auto_increment_set(&hi2c1, PROPERTY_ENABLE);
+  lps22hh_err = lps22hh_data_rate_set(&hi2c1, LPS22HH_10_Hz_LOW_NOISE);
 
   static uint32_t AD_DMA;
   HAL_ADC_Start(&hadc);
@@ -145,7 +162,10 @@ int main(void) {
 
     /* USER CODE BEGIN 3 */
     static uint16_t hum, tmp, servo;
-    err = HTS221_Get_Measurement(&hi2c1, &hum, &tmp);
+    static axis1bit32_t raw_pressure;
+    static uint32_t t = 0;
+    hts221_err = HTS221_Get_Measurement(&hi2c1, &hum, &tmp);
+    lps22hh_err = lps22hh_pressure_raw_get(&hi2c1, raw_pressure.u8bit);
     HAL_ADC_PollForConversion(&hadc, HAL_MAX_DELAY);
     AD_DMA = HAL_ADC_GetValue(&hadc);
     if (AD_DMA > 1100 && servo == 0) {
@@ -155,7 +175,8 @@ int main(void) {
         __HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_2, 1000 * 0.1);
       servo = 0;
     }
-    printf("%lu,%lu,%lu,%lu\r\n", tmp, hum, AD_DMA, servo);
+    printf("%lu,%lu,%lu,%lu,%f,%lu\r\n", t, tmp, hum, AD_DMA, (float) raw_pressure.i32bit / 4096.0, servo);
+    t++;
     LL_mDelay(1000);
   }
   /* USER CODE END 3 */
