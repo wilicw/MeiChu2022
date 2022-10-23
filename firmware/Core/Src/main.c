@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2022 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2022 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -22,8 +22,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "HTS221.h"
-#include "stdlib.h"
+#include "LIS2DW12.h"
+#include "LPS22HH.h"
 #include "stdio.h"
+#include "stdlib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -80,6 +82,22 @@ uint8_t HTS221_IO_Read(void *handle, uint8_t ReadAddr, uint8_t *pBuffer, uint16_
   HAL_I2C_Mem_Read(handle, HTS221_I2C_ADDRESS, ReadAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, nBytesToRead, 1000);
 }
 
+uint8_t LPS22HH_IO_Write(void *handle, uint8_t WriteAddr, uint8_t *pBuffer, uint16_t nBytesToWrite) {
+  HAL_I2C_Mem_Write(handle, LPS22HH_I2C_ADD_H, WriteAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, nBytesToWrite, 1000);
+}
+
+uint8_t LPS22HH_IO_Read(void *handle, uint8_t ReadAddr, uint8_t *pBuffer, uint16_t nBytesToRead) {
+  HAL_I2C_Mem_Read(handle, LPS22HH_I2C_ADD_H, ReadAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, nBytesToRead, 1000);
+}
+
+uint8_t LIS2DW12_IO_Write(void *handle, uint8_t WriteAddr, uint8_t *pBuffer, uint16_t nBytesToWrite) {
+  HAL_I2C_Mem_Write(handle, LIS2DW12_I2C_ADD_H, WriteAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, nBytesToWrite, 1000);
+}
+
+uint8_t LIS2DW12_IO_Read(void *handle, uint8_t ReadAddr, uint8_t *pBuffer, uint16_t nBytesToRead) {
+  HAL_I2C_Mem_Read(handle, LIS2DW12_I2C_ADD_H, ReadAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, nBytesToRead, 1000);
+}
+
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int c)
 #else
@@ -87,16 +105,17 @@ uint8_t HTS221_IO_Read(void *handle, uint8_t ReadAddr, uint8_t *pBuffer, uint16_
 #endif
 
 PUTCHAR_PROTOTYPE {
-  while (LL_USART_IsActiveFlag_TXE(USART2) == RESET) {}
-  LL_USART_TransmitData8(USART2, (char) c);
+  while (LL_USART_IsActiveFlag_TXE(USART2) == RESET) {
+  }
+  LL_USART_TransmitData8(USART2, (char)c);
   return c;
 }
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void) {
   /* USER CODE BEGIN 1 */
 
@@ -126,16 +145,47 @@ int main(void) {
   MX_ADC_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  static HTS221_Error_et err;
-  err = HTS221_DeActivate(&hi2c1);
-  err = HTS221_Set_BduMode(&hi2c1, HTS221_ENABLE);
-  err = HTS221_Set_Odr(&hi2c1, HTS221_ODR_1HZ);
-  err = HTS221_Activate(&hi2c1);
+  static HTS221_Error_et hts221_err;
+  static int32_t lps22hh_err;
+  hts221_err = HTS221_DeActivate(&hi2c1);
+  hts221_err = HTS221_Set_BduMode(&hi2c1, HTS221_ENABLE);
+  hts221_err = HTS221_Set_Odr(&hi2c1, HTS221_ODR_1HZ);
+  hts221_err = HTS221_Activate(&hi2c1);
+
+  lps22hh_err = lps22hh_i3c_interface_set(&hi2c1, LPS22HH_I3C_DISABLE);
+  lps22hh_err = lps22hh_data_rate_set(&hi2c1, (lps22hh_odr_t)(LPS22HH_POWER_DOWN | 0x10));
+  lps22hh_err = lps22hh_lp_bandwidth_set(&hi2c1, LPS22HH_LPF_ODR_DIV_2);
+  lps22hh_err = lps22hh_block_data_update_set(&hi2c1, PROPERTY_ENABLE);
+  lps22hh_err = lps22hh_auto_increment_set(&hi2c1, PROPERTY_ENABLE);
+  lps22hh_err = lps22hh_data_rate_set(&hi2c1, LPS22HH_10_Hz_LOW_NOISE);
+
+  static int32_t lis2dw12_err;
+  lis2dw12_err = lis2dw12_auto_increment_set(&hi2c1, PROPERTY_ENABLE);
+  lis2dw12_err = lis2dw12_block_data_update_set(&hi2c1, PROPERTY_ENABLE);
+  lis2dw12_err = lis2dw12_fifo_mode_set(&hi2c1, LIS2DW12_BYPASS_MODE);
+  lis2dw12_err = lis2dw12_power_mode_set(&hi2c1, LIS2DW12_HIGH_PERFORMANCE);
+  lis2dw12_err = lis2dw12_data_rate_set(&hi2c1, LIS2DW12_XL_ODR_OFF);
+  lis2dw12_err = lis2dw12_full_scale_set(&hi2c1, LIS2DW12_2g);
+  lis2dw12_err = lis2dw12_data_rate_set(&hi2c1, LIS2DW12_XL_ODR_1Hz6_LP_ONLY);
+  lis2dw12_err = lis2dw12_power_mode_set(&hi2c1, LIS2DW12_HIGH_PERFORMANCE_LOW_NOISE);
 
   static uint32_t AD_DMA;
   HAL_ADC_Start(&hadc);
 
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+
+  LL_mDelay(10);
+  static axis3bit16_t acc;
+  static int16_t offset_acc_x, acc_x;
+  static int16_t offset_acc_y, acc_y;
+  static int16_t offset_acc_z, acc_z;
+  static uint16_t hum, tmp, servo, wind, eq;
+  static axis1bit32_t raw_pressure;
+  static uint32_t t = 0;
+  lis2dw12_err = lis2dw12_acceleration_raw_get(&hi2c1, acc.u8bit);
+  offset_acc_x = (acc.i16bit[0] / 16);
+  offset_acc_y = (acc.i16bit[1] / 16);
+  offset_acc_z = (acc.i16bit[2] / 16);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -144,27 +194,36 @@ int main(void) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    static uint16_t hum, tmp, servo;
-    err = HTS221_Get_Measurement(&hi2c1, &hum, &tmp);
-    HAL_ADC_PollForConversion(&hadc, HAL_MAX_DELAY);
-    AD_DMA = HAL_ADC_GetValue(&hadc);
-    if (AD_DMA > 1100 && servo == 0) {
-        __HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_2, 1000 * 0.05);
-      servo = 1;
-    } else if (AD_DMA < 1000 && servo == 1) {
-        __HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_2, 1000 * 0.1);
-      servo = 0;
+    lis2dw12_err = lis2dw12_acceleration_raw_get(&hi2c1, acc.u8bit);
+    acc_x = (acc.i16bit[0] / 16) - offset_acc_x;
+    acc_y = (acc.i16bit[1] / 16) - offset_acc_y;
+    acc_z = (acc.i16bit[2] / 16) - offset_acc_z;
+    eq = acc_x * acc_x + acc_y * acc_y >= 500;
+    t++;
+    LL_mDelay(1);
+    if (t % 700 == 0) {
+      hts221_err = HTS221_Get_Measurement(&hi2c1, &hum, &tmp);
+      static uint32_t t = 0;
+      lps22hh_err = lps22hh_pressure_raw_get(&hi2c1, raw_pressure.u8bit);
+      HAL_ADC_PollForConversion(&hadc, HAL_MAX_DELAY);
+      AD_DMA = HAL_ADC_GetValue(&hadc);
+      if (AD_DMA > 1100) {
+        wind = 1;
+      } else if (AD_DMA < 1000) {
+        wind = 0;
+      }
+      servo = wind | eq;
+      printf("%lu,%lu,%lu,%lu,%f,%lu,%lu\r\n", t, tmp, hum, AD_DMA, (float)raw_pressure.i32bit / 4096.0, servo, eq);
     }
-    printf("%lu,%lu,%lu,%lu\r\n", tmp, hum, AD_DMA, servo);
-    LL_mDelay(1000);
+    __HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_2, 1000 * (servo ? 0.05 : 0.1));
   }
   /* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void) {
   LL_FLASH_SetLatency(LL_FLASH_LATENCY_1);
   while (LL_FLASH_GetLatency() != LL_FLASH_LATENCY_1) {
@@ -174,7 +233,6 @@ void SystemClock_Config(void) {
 
   /* Wait till HSI is ready */
   while (LL_RCC_HSI_IsReady() != 1) {
-
   }
   LL_RCC_HSI_SetCalibTrimming(16);
   LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI, LL_RCC_PLL_MUL_4, LL_RCC_PLL_DIV_2);
@@ -182,7 +240,6 @@ void SystemClock_Config(void) {
 
   /* Wait till PLL is ready */
   while (LL_RCC_PLL_IsReady() != 1) {
-
   }
   LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
   LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
@@ -191,7 +248,6 @@ void SystemClock_Config(void) {
 
   /* Wait till System clock is ready */
   while (LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL) {
-
   }
   LL_SetSystemCoreClock(32000000);
 
@@ -204,12 +260,11 @@ void SystemClock_Config(void) {
 }
 
 /**
-  * @brief ADC Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief ADC Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_ADC_Init(void) {
-
   /* USER CODE BEGIN ADC_Init 0 */
 
   /* USER CODE END ADC_Init 0 */
@@ -221,7 +276,7 @@ static void MX_ADC_Init(void) {
   /* USER CODE END ADC_Init 1 */
 
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
-  */
+   */
   hadc.Instance = ADC1;
   hadc.Init.OversamplingMode = DISABLE;
   hadc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
@@ -244,7 +299,7 @@ static void MX_ADC_Init(void) {
   }
 
   /** Configure for the selected ADC regular channel to be converted.
-  */
+   */
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
   if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK) {
@@ -253,16 +308,14 @@ static void MX_ADC_Init(void) {
   /* USER CODE BEGIN ADC_Init 2 */
 
   /* USER CODE END ADC_Init 2 */
-
 }
 
 /**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief I2C1 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_I2C1_Init(void) {
-
   /* USER CODE BEGIN I2C1_Init 0 */
 
   /* USER CODE END I2C1_Init 0 */
@@ -284,29 +337,27 @@ static void MX_I2C1_Init(void) {
   }
 
   /** Configure Analogue filter
-  */
+   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK) {
     Error_Handler();
   }
 
   /** Configure Digital filter
-  */
+   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK) {
     Error_Handler();
   }
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
-
 }
 
 /**
-  * @brief TIM2 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief TIM2 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_TIM2_Init(void) {
-
   /* USER CODE BEGIN TIM2_Init 0 */
 
   /* USER CODE END TIM2_Init 0 */
@@ -342,16 +393,14 @@ static void MX_TIM2_Init(void) {
 
   /* USER CODE END TIM2_Init 2 */
   HAL_TIM_MspPostInit(&htim2);
-
 }
 
 /**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief USART2 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_USART2_UART_Init(void) {
-
   /* USER CODE BEGIN USART2_Init 0 */
 
   /* USER CODE END USART2_Init 0 */
@@ -400,14 +449,12 @@ static void MX_USART2_UART_Init(void) {
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
-
 }
 
 /**
-  * Enable DMA controller clock
-  */
+ * Enable DMA controller clock
+ */
 static void MX_DMA_Init(void) {
-
   /* DMA controller clock enable */
   __HAL_RCC_DMA1_CLK_ENABLE();
 
@@ -415,14 +462,13 @@ static void MX_DMA_Init(void) {
   /* DMA1_Channel1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-
 }
 
 /**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_GPIO_Init(void) {
   LL_EXTI_InitTypeDef EXTI_InitStruct = {0};
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -459,7 +505,6 @@ static void MX_GPIO_Init(void) {
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -467,9 +512,9 @@ static void MX_GPIO_Init(void) {
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void) {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
@@ -479,16 +524,15 @@ void Error_Handler(void) {
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t *file, uint32_t line)
-{
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
+void assert_failed(uint8_t *file, uint32_t line) {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
