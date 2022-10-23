@@ -29,7 +29,7 @@ function App() {
       }].slice(-maxX));
       setPressure((oldPressure) => [...oldPressure, {
         time: oldPressure.slice(-1)[0].time + 1,
-        pressure: parseInt(splitted[4], 10) / 10,
+        pressure: parseInt(splitted[4], 10),
       }].slice(-maxX));
       setSpeed((oldSpeed) => [...oldSpeed, {
         time: oldSpeed.slice(-1)[0].time + 1,

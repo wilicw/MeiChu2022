@@ -35,7 +35,7 @@ const DataFormatter = (n: number) => {
 function DataVisualization({
   colors, height, chartName, unit, data, keys,
 }: DataVisualProps) {
-  const displayedValue: string = keys.length === 1 ? (data.length ? data[data.length - 1][keys[0]] : 0).toFixed(4) : '';
+  const displayedValue: string = keys.length === 1 ? (data.length ? data[data.length - 1][keys[0]] : 0).toFixed(2) : '';
   return (
     <Card
       style={{
