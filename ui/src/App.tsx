@@ -125,7 +125,7 @@ function App() {
             colors={['#28536b']}
             keys={['speed']}
             chartName="Wind Speed"
-            unit="m/s"
+            unit=""
             data={speed}
             height={300}
           />
