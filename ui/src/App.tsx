@@ -1,8 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import './App.css';
 import { Flex, Box, Text } from 'rebass';
-import { ToggleButton } from '@fluentui/react-components';
+import { ToggleButton, Slider } from '@fluentui/react-components';
 import DataVisualization from './components/DataVisualization';
+
+const maxX = 100;
 
 function App() {
   const [temp, setTemp] = useState([{ time: 0, temp: 0 }]);
@@ -10,6 +12,33 @@ function App() {
   const [pressure, setPressure] = useState([{ time: 0, pressure: 0 }]);
   const [speed, setSpeed] = useState([{ time: 0, speed: 0 }]);
   const [fanState, setFanState] = useState(0);
+  const [earthquakeState, setEarthquakeState] = useState(0);
+
+  const plot = (v: string) => {
+    // console.log(v);
+    const splitted = v.split(',', 10);
+    if (splitted.length === 7) {
+      // const t = parseInt(splitted[0], 10);
+      setTemp((oldTemp) => [...oldTemp, {
+        time: oldTemp.slice(-1)[0].time + 1,
+        temp: parseInt(splitted[1], 10) / 10,
+      }].slice(-maxX));
+      setHumidity((oldHumidity) => [...oldHumidity, {
+        time: oldHumidity.slice(-1)[0].time + 1,
+        humidity: parseInt(splitted[2], 10) / 10,
+      }].slice(-maxX));
+      setPressure((oldPressure) => [...oldPressure, {
+        time: oldPressure.slice(-1)[0].time + 1,
+        pressure: parseInt(splitted[4], 10) / 10,
+      }].slice(-maxX));
+      setSpeed((oldSpeed) => [...oldSpeed, {
+        time: oldSpeed.slice(-1)[0].time + 1,
+        speed: parseInt(splitted[3], 10) / 10,
+      }].slice(-maxX));
+      setFanState(() => parseInt(splitted[5], 10));
+      setEarthquakeState(() => parseInt(splitted[6], 10));
+    }
+  };
 
   const requestSerialPort = useCallback(() => {
     (navigator as any).serial.requestPort().then((port:any) => {
@@ -17,35 +46,19 @@ function App() {
         const decoder = new TextDecoderStream();
         port.readable.pipeTo(decoder.writable);
         const reader = decoder.readable.getReader();
-        setInterval(() => {
-          reader.read().then(({ value }) => {
-            const v = value as string;
-            console.log(v);
-            const splitted = v.split(',', 6);
-            if (splitted.length === 6) {
-              // const t = parseInt(splitted[0], 10);
-              setTemp((oldTemp) => [...oldTemp, {
-                time: oldTemp.slice(-1)[0].time + 1,
-                temp: parseInt(splitted[1], 10) / 10,
-              }].slice(-10));
-              setHumidity((oldHumidity) => [...oldHumidity, {
-                time: oldHumidity.slice(-1)[0].time + 1,
-                humidity: parseInt(splitted[2], 10) / 10,
-              }].slice(-10));
-              setPressure((oldPressure) => [...oldPressure, {
-                time: oldPressure.slice(-1)[0].time + 1,
-                pressure: parseInt(splitted[4], 10) / 10,
-              }].slice(-10));
-              setSpeed((oldSpeed) => [...oldSpeed, {
-                time: oldSpeed.slice(-1)[0].time + 1,
-                speed: parseInt(splitted[3], 10) / 10,
-              }].slice(-10));
-              setFanState(() => parseInt(splitted[5], 10));
-            }
-          }).catch((error: any) => {
-            alert(error);
-          });
-        }, 1000);
+        let result = '';
+        reader.read().then(function process({ value }) :any {
+          result += value;
+          const endlIdx = result.indexOf('\n');
+          if (endlIdx !== -1) {
+            const s = result.slice(0, endlIdx);
+            plot(s);
+            result = result.slice(endlIdx + 1, -1);
+          }
+          return reader.read().then(process);
+        }).catch((error: any) => {
+          alert(error);
+        });
       }).catch((error: any) => {
         alert(error);
       });
@@ -59,6 +72,12 @@ function App() {
       <Flex>
         <Text style={{ margin: 5 }} p={3} fontWeight="bold">Still Discussing...</Text>
         <Box mx="auto" />
+        {/* <Slider size="medium" defaultValue={100} /> */}
+        {earthquakeState === 1 ? (
+          <ToggleButton shape="rounded" style={{ margin: 10, backgroundColor: '#ef233c', color: 'white' }} disabled>Shaking!</ToggleButton>
+        ) : (
+          <ToggleButton shape="rounded" style={{ margin: 10, backgroundColor: '#55A630', color: 'white' }}>Static</ToggleButton>
+        )}
         {fanState === 1 ? (
           <ToggleButton shape="rounded" style={{ margin: 10, backgroundColor: '#F77F00', color: 'white' }} disabled>Feathering</ToggleButton>
         ) : (
