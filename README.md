@@ -17,10 +17,10 @@ To avoid the wind turbines from overwhelming wind speed or earthquakes, we made 
 
 ### Operation Mode
 
-![operation mode](![image](https://user-images.githubusercontent.com/83940946/197373495-e4ec9916-bc11-405c-8617-a710793abbae.png))
+![image](https://user-images.githubusercontent.com/83940946/197373495-e4ec9916-bc11-405c-8617-a710793abbae.png)
 
 ### Feathering because of wind Speed
-![wind speed](![image](https://user-images.githubusercontent.com/83940946/197373506-5d2c130f-3f0c-4dd5-8764-d7adc4977980.png))
+![image](https://user-images.githubusercontent.com/83940946/197373506-5d2c130f-3f0c-4dd5-8764-d7adc4977980.png)
 
 ### Feathering because of earthquake
-![earthquake](![image](https://user-images.githubusercontent.com/83940946/197373508-3ae17bf6-e0a6-4b4d-b5df-dcbed7b1ce16.png))
+![image](https://user-images.githubusercontent.com/83940946/197373508-3ae17bf6-e0a6-4b4d-b5df-dcbed7b1ce16.png)
